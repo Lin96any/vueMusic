@@ -1,24 +1,29 @@
-<<<<<<< HEAD
 # 网易云音乐webapp
 
 #### 介绍
+
 基于Vue所开发的一款webapp
 
 #### 软件架构
-软件架构说明
 
+软件架构说明
+1.Vue  
+2.Vuex
+3.Vue-router  
+4.Webpack  
+5.Axios  
+6.Fastclick  
+7.Vue-lazy
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1. $git clone (<https://gitee.com/Big_Smail/webapp_of_netease_cloud_music.git>)
+2. $npm install
+3. $npm run serve 或 $npm start
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1. 若有问题请Issuses
 
 #### 参与贡献
 
@@ -26,34 +31,3 @@
 2.  新建 Feat_xxx 分支
 3.  提交代码
 4.  新建 Pull Request
-
-
-#### 码云特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5.  码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
-=======
-# vue-music
-
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
->>>>>>> init
