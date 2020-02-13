@@ -1,5 +1,7 @@
 <template>
-  <div class="home"></div>
+  <div class="home">
+    <span class='iconfont'>&#xe62c;</span>
+  </div>
 </template>
 
 <script>
@@ -25,7 +27,7 @@ export default {
         this.banner = banners;
       }
     }
-    
+
   }
 };
 </script>
