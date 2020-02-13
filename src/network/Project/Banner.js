@@ -1,6 +1,7 @@
 import createAxios from '../Axios/axios';
 
-function Banner(number = 2) {
+
+function Banner(number) {
     let url = 'banner?type=' + number + '';
     return createAxios(url)
 }

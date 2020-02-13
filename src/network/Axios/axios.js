@@ -1,7 +1,7 @@
 let axios = require('axios');
 function createAxios(url){
     let Axios = axios.create({
-        baseURL:'http://server.attribute.top/music/api',
+        baseURL:'http://server.attribute.top/music/api',//主接口
         timeout:1500
     })
     Axios.interceptors.request.use(config=>{
