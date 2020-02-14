@@ -1,20 +1,22 @@
 <template>
-  <div class="home">
-    <span class='iconfont'>&#xe62c;</span>
+  <div calss="recoments">
+      <slider :banners='banner'></slider>
   </div>
 </template>
 
 <script>
-import {Banner} from "network";
-
+import { Banner } from "network";
+import Slider from "base/Slider";
 export default {
-  name: "Home",
+  name: "Recoments.vue",
   data() {
     return {
       banner: []
     };
   },
-  components: {},
+  components: {
+    Slider
+  },
   mounted() {
     this.getBanner();
   },
@@ -25,12 +27,15 @@ export default {
       let { code, banners } = data;
       if (code === 200) {
         this.banner = banners;
+        console.log(this.banner);
       }
     }
-
   }
 };
 </script>
 
-<style lang="scss" scope>
+<style lang="scss" scoped>
+@import "assets/scss/mixin";
+@import "assets/scss/variable.scss";
+
 </style>
