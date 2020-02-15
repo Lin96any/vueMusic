@@ -2,12 +2,12 @@
   <div class="carousel-wrapper">
     <swiper :options="swiperOption" class="carousel-group">
       <swiper-slide
-        v-for="(item, index) in banners"
+        v-for="(item) in banners"
         :key="item.bannerId"
         class="swiper-item-wrapper"
       >
         <a class="swiper-item" :href="item.url">
-          <img :src="item.pic" alt />
+          <img v-lazy="item.pic" alt />
         </a>
       </swiper-slide>
       <!-- Optional controls -->
@@ -19,7 +19,9 @@
 <script>
 import "swiper/dist/css/swiper.css"; //在全局没引入，这里记得要！
 import { swiper, swiperSlide } from "vue-awesome-swiper";
+import mixns from "utials/mixinStore";
 export default {
+  mixins: [mixns],
   name: "Slider.vue",
   props: {
     banners: {
@@ -34,7 +36,7 @@ export default {
       swiperOption: {
         speed: 500, //切换速度
         // watchOverflow: false, //当没有足够的slide切换时，例如只有1个slide（非loop），swiper会失效且隐藏导航等。默认不开启这个功能。
-        loop: true, //开启循环模式
+        loop: false, //开启循环模式
         slidesPerView: 1,
         spaceBetween: 10,
         autoplay: {
@@ -57,6 +59,9 @@ export default {
   components: {
     swiper,
     swiperSlide
+  },
+  methods: {
+
   }
 };
 </script>
@@ -66,7 +71,7 @@ export default {
 @import "assets/scss/variable.scss";
 
 .swiper-pagination-bullet-active {
-  background: rgba(165, 13, 13, 0.863);
+  background: rgba(228, 220, 221, 0.863);
 }
 
 .carousel-wrapper {

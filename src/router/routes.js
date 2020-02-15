@@ -2,7 +2,7 @@
 let routes = [
     {
         path: '/',
-        redirect: '/home'
+        redirect: '/home/recoments'
     },
     {
         path: '/home',

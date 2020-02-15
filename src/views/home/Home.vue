@@ -17,7 +17,7 @@ export default {
   data() {
     return {
       banner: [],
-      tablist:['推荐','排行','歌手']
+      tablist:['推荐','排行','热门歌手']
     };
   },
   components: {
