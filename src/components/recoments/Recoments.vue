@@ -1,5 +1,4 @@
 <template>
-  <div class="recoments">
     <scroll class="recoments_wrapper" :data="banner" ref="scroll">
       <div class="recoments_wrapper_content">
         <slider :banners="banner"></slider>
@@ -9,7 +8,6 @@
         <loading></loading>
       </div>
     </scroll>
-  </div>
 </template>
 
 <script>
@@ -65,7 +63,7 @@ export default {
     /* 获取新歌速递 */
     getnewmusic(type) {
       newsmusic(type).then(res => {
-        console.log(res);
+        
       });
     }
   }
@@ -75,11 +73,10 @@ export default {
 <style lang="scss" scoped>
 @import "assets/scss/mixin";
 @import "assets/scss/variable.scss";
-.recoments {
-  position: relative;
-  height: calc(100% - 2.4rem);
   .recoments_wrapper {
-    height: 100%;
+    position: relative;
+    height: calc(100% - 2.4rem);
+    bottom: 0;
     overflow: hidden;
     .recoments_wrapper_content{
       .playmargin{
@@ -95,5 +92,4 @@ export default {
       transform: translateX(-50%);
     }
   }
-}
 </style>

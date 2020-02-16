@@ -46,7 +46,6 @@ export default {
 @import "assets/scss/variable.scss";
 .play_list_wrapper {
   width: 100%;
-  // padding: 0 0.1rem 2.2rem 0.2rem;
   height: 100%;
   padding: 0 0.1rem;
   box-sizing: border-box;

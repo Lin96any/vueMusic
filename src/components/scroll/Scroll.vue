@@ -24,6 +24,10 @@ export default {
       default() {
         return [];
       }
+    },
+    listenScroll: {
+      type:Boolean,
+      default:false
     }
   },
   mounted() {
@@ -41,6 +45,13 @@ export default {
         probeType: this.probeType
       });
       this.setbs(this.scroll);
+
+      if(this.listenScroll){
+        this.scroll.on('scroll',(poy)=>{
+            this.$emit('scroll',poy)
+        })
+      }
+
     },
     enable() {
       this.scroll && this.scroll.enable();
@@ -50,20 +61,26 @@ export default {
     },
     refresh() {
       this.scroll && this.scroll.refresh();
+    },
+    scrollTo() {
+      this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments);
+    },
+    scrollElement() {
+      this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments);
     }
   },
-  watch:{
-      data(){
-          setTimeout(()=>{
-              this.refresh()
-          },20)
-      }
+  watch: {
+    data() {
+      setTimeout(() => {
+        this.refresh();
+      }, 20);
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.wrapper{
+.wrapper {
   height: 100%;
 }
 </style>
