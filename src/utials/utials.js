@@ -30,8 +30,24 @@ let getindex = (el, name, val)=>{
     }
 }
 
+class SingerMusic{
+    constructor(MusicId,MusicName,AlbumId,AlbumName,AlbumImage){
+        /* 歌曲ID */
+        this.MusicId = MusicId;
+        /* 歌曲名字 */
+        this.MusicName = MusicName;
+        /* 专辑ID */
+        this.AlbumId = AlbumId;
+        /* 专辑图片 */
+        this.AlbumImage = AlbumImage;
+        /* 专辑名字 */
+        this.AlbumName = AlbumName;
+    }
+}
+
 export {
     debounce,
     Singer,
-    getindex
+    getindex,
+    SingerMusic
 }

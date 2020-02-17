@@ -12,7 +12,22 @@ let hotSinger = (offset,limit)=>{
     return createAxios(url)
 }
 
+/* 根据id获取歌手单曲 */
+let singerMusic = (id)=>{
+    let url = '/artists?id='+id+'';
+    return createAxios(url)
+}
+
+/* 根据id获取歌手50首热门歌曲 */
+
+let singerHotMusic = (id) => {
+    let url = '/artist/top/song?id=' + id + '';
+    return createAxios(url)
+}
+
 export {
     newsmusic,
-    hotSinger
+    hotSinger,
+    singerMusic,
+    singerHotMusic
 }

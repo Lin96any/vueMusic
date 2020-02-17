@@ -2,7 +2,8 @@ const music = {
     state: {
         playlist: [],
         playlasttime:0,
-        currentBs:null
+        currentBs:null,
+        singerid:{}
     },
     mutations: {
         'SET_PLAYLIST': (state, list) => {
@@ -13,6 +14,9 @@ const music = {
         },
         'SET_BS':(state,bs)=>{
             state.currentBs = bs;
+        },
+        'SET_SINGERID': (state, id) => {
+            state.singerid = id
         }
     },
     actions: {
@@ -24,6 +28,9 @@ const music = {
         },
         setbs:({commit},bs)=>{
             commit('SET_BS',bs)
+        },
+        setsingerid:({commit},id)=>{
+            commit('SET_SINGERID',id)
         }
     }
 }

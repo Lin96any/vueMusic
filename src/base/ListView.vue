@@ -11,7 +11,7 @@
       <li v-for="group in data" :key="group.title" class="list-group" ref="listgroup">
         <p class="list-group-title">{{group.title}}</p>
         <ul>
-          <li v-for="item in group.item" :key="item.id" class="list-group-item">
+          <li v-for="item in group.item" :key="item.id" class="list-group-item"  @click='selectitem(item)'>
             <img v-lazy="item.avatar" alt class="avatar" />
             <p class="name">{{item.name}}</p>
           </li>
@@ -32,12 +32,16 @@
     <div class="list-fixed-tile" v-show="!positive">
       <div class="title">{{fixedtitle}}</div>
     </div>
+    <div class="loading" v-show='!this.data.length'>
+        <loading></loading>
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from "components/scroll/Scroll";
 import { getindex } from "utials/utials";
+import loading from 'base/loading/loading'
 export default {
   name: "ListView.vue",
   props: {
@@ -86,7 +90,8 @@ export default {
   },
   mounted() {},
   components: {
-    Scroll
+    Scroll,
+    loading
   },
   methods: {
       /* 点击short滚动到指定区域 */
@@ -122,6 +127,11 @@ export default {
         initscroll += parseInt(item.offsetHeight) + 10;
         this.allScroll.push(initscroll);
       });
+    },
+    selectitem(item){
+        /* 事件派发出去 */
+        this.$emit('selectSinger',item)
+        
     }
   },
   watch: {
@@ -148,7 +158,7 @@ export default {
 <style lang="scss" scoped>
 @import "assets/scss/variable";
 .listview {
-  position: relative;
+  position: positon;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -230,7 +240,7 @@ export default {
       background: $color-theme;
     }
   }
-  .loading-container {
+  .loading {
     position: absolute;
     width: 100%;
     top: 50%;

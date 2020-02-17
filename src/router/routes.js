@@ -17,7 +17,14 @@ let routes = [
             {
                 path: 'singer',
                 name: 'Singer',
-                component: () => import('components/singer/Singer.vue')
+                component: () => import('components/singer/Singer.vue'),
+                children:[
+                    {
+                        path:'singerdetial',
+                        name:'SingerDetails',
+                        component: () => import('components/singer/Children/SingerDetails')
+                    }
+                ]
             },
             {
                 path: 'rank',

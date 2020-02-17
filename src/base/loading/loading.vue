@@ -1,6 +1,7 @@
 <template>
   <div class="loading">
     <img src="./loading.gif" width="24" height="24">
+    <p>{{title}}</p>
   </div>
 </template>
 
@@ -24,6 +25,9 @@ export default {
   text-align: center;
   img {
     margin-top: .2rem;
+  }
+  p{
+    font-size: .32rem;
   }
 }
 </style>
