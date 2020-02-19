@@ -25,9 +25,15 @@ let singerHotMusic = (id) => {
     return createAxios(url)
 }
 
+let MusicURL = (id)=>{
+    let url = '/song/url?id='+id+'';
+    return createAxios(url)
+}
+
 export {
     newsmusic,
     hotSinger,
     singerMusic,
-    singerHotMusic
+    singerHotMusic,
+    MusicURL
 }

@@ -31,7 +31,7 @@ let getindex = (el, name, val)=>{
 }
 
 class SingerMusic{
-    constructor(MusicId,MusicName,AlbumId,AlbumName,AlbumImage){
+    constructor(MusicId,MusicName,AlbumId,AlbumName,AlbumImage,SingerID,SingerName,singerImg){
         /* 歌曲ID */
         this.MusicId = MusicId;
         /* 歌曲名字 */
@@ -42,6 +42,12 @@ class SingerMusic{
         this.AlbumImage = AlbumImage;
         /* 专辑名字 */
         this.AlbumName = AlbumName;
+        /* 歌手id */
+        this.SingerID = SingerID;
+        /* 歌手名字 */
+        this.SingerName = SingerName;
+        /* 歌手图片 */
+        this.singerImg = singerImg
     }
 }
 

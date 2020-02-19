@@ -1,5 +1,5 @@
 <template>
-  <div class="singer">
+  <div class="singer" >
     <list-view :data="this.artists" @selectSinger="singeritem"></list-view>
     <transition name="slide">
       <router-view></router-view>
@@ -106,7 +106,6 @@ export default {
       return hot.concat(ret);
     },
     singeritem(item) {
-      this.setsingerid(item);
       SetObject('singer',item)
       this.$router.push({
         path: "/home/singer/singerdetial",

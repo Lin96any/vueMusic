@@ -11,7 +11,7 @@
 <script>
 import {Banner} from "network";
 import Headers from 'components/head/head';
-import tab from './homeChild/Tab'
+import tab from './homeChild/Tab';
 export default {
   name: "Home",
   data() {

@@ -1,7 +1,7 @@
 <template>
   <div class="singer_detials">
     <div class="header" ref="header">
-      <div class="icon">
+      <div class="icon" @click="goback">
         <i class="iconfont">&#xe63e;</i>
       </div>
       <div class="headertxt">
@@ -10,89 +10,20 @@
     </div>
     <div class="disponse">
       <scroll :data="disposeMusicData" class="musicScroll">
-        <ul>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-          <li>123</li>
-        </ul>
+        <div class="wrappers">
+          <div class="img">
+            <div class="bgimg" :style="bgimg"></div>
+            <div class="playtx">
+              <span class="iconfont">&#xe60d;</span>
+              <span>随机播放</span>
+            </div>
+          </div>
+          <song-list :song="disposeMusicData" :singer="headertitle" @selectItem="select"></song-list>
+        </div>
       </scroll>
+    </div>
+    <div class="loadding">
+      <loadding v-show="!disposeMusicData.length"></loadding>
     </div>
   </div>
 </template>
@@ -101,12 +32,23 @@
 import Mixins from "utials/mixinStore";
 import { SingerMusic } from "utials/utials";
 import { SetObject, GetObject } from "utials/storage";
-import { singerMusic, singerHotMusic } from "network";
+import { singerMusic, singerHotMusic, MusicURL } from "network";
 import scroll from "components/scroll/Scroll";
+import SongList from "base/Songlist";
+import loadding from "base/loading/loading";
 export default {
   mixins: [Mixins],
   name: "SingerDetails",
-  computed: {},
+  created() {
+    /* 从storage中取出缓存 */
+    let { id, name, avatar } = GetObject("singer");
+    this.avatars = avatar;
+    this.headertitle = name;
+    this.singerId = id;
+  },
+  mounted() {
+    this._initmusic(this.singerId);
+  },
   data() {
     return {
       musicObj: {},
@@ -120,16 +62,19 @@ export default {
       MusicData: [],
       /* 对歌曲原始数据进行处理 */
       disposeMusicData: [],
-      headertitle: "歌手热门歌曲"
+      headertitle: "",
+      avatars: ""
     };
   },
-  created() {
-    /* 从storage中取出缓存 */
-    let storageMusicObj = GetObject("singer");
-    this.singerId = storageMusicObj.id;
+  components: {
+    scroll,
+    SongList,
+    loadding
   },
-  mounted() {
-    this._initmusic(this.singerId);
+  computed: {
+    bgimg() {
+      return `backgroundImage:url(${this.avatars})`;
+    }
   },
   methods: {
     async _initmusic(id) {
@@ -147,18 +92,34 @@ export default {
       list.forEach(item => {
         let { name, id, al } = item;
         // id,name,picUrl
-        ret.push(new SingerMusic(id, name, al.id, al.name, al.picUrl));
+        ret.push(
+          new SingerMusic(
+            id,
+            name,
+            al.id,
+            al.name,
+            al.picUrl,
+            this.singerId,
+            this.SingerName,
+            this.SingerImage
+          )
+        );
       });
       return ret;
+    },
+    goback() {
+      this.$router.go(-1);
+    },
+    /* 歌曲选择 */
+    async select(item, index) {
+      this.selectPlay({ list: this.disposeMusicData, index: index });
+      let musicurl = await MusicURL(item.MusicId);
+      this.setMusicUrl(musicurl.data);
     }
-  },
-  components: {
-    scroll
   },
   watch: {
     MusicData(node) {
       this.disposeMusicData = this._Normal_DisposeData(node);
-      console.log(this.disposeMusicData);
     }
   }
 };
@@ -207,10 +168,45 @@ export default {
   }
   .disponse {
     position: absolute;
-    top: .88rem;
+    top: 0.88rem;
     bottom: 0;
+    width: 100%;
     .musicScroll {
       background: $color-background;
+      .wrappers {
+        .img {
+          position: relative;
+          width: 100%;
+          height: 6rem;
+          margin: auto;
+          .bgimg {
+            width: 100%;
+            height: 100%;
+            background-repeat: no-repeat;
+            background-size: cover;
+          }
+          .playtx {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.8rem;
+            height: 0.8rem;
+            position: absolute;
+            bottom: 0.2rem;
+            left: 50%;
+            font-size: 0.32rem;
+            transform: translateX(-50%);
+            color: rgb(230, 158, 66);
+            border: 1px solid burlywood;
+            border-radius: 0.1rem;
+            span {
+              margin-right: 0.2rem;
+              line-height: 0.48rem;
+              vertical-align: middle;
+            }
+          }
+        }
+      }
     }
   }
 }
