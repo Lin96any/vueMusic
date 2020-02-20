@@ -20,18 +20,18 @@ class Singer {
     }
 }
 
-let getindex = (el, name, val)=>{
+let getindex = (el, name, val) => {
     let prefix = 'data-',
         names = prefix + name;
     if (val) {
         return el.setAttribute(names, val);
-    }else{
+    } else {
         return el.getAttribute(names);
     }
 }
 
-class SingerMusic{
-    constructor(MusicId,MusicName,AlbumId,AlbumName,AlbumImage,SingerID,SingerName,singerImg){
+class SingerMusic {
+    constructor(MusicId, MusicName, AlbumId, AlbumName, AlbumImage, SingerID, SingerName, singerImg) {
         /* 歌曲ID */
         this.MusicId = MusicId;
         /* 歌曲名字 */
@@ -51,9 +51,34 @@ class SingerMusic{
     }
 }
 
+const playMode = {
+    sequence: 0,
+    loop: 1,
+    random: 2
+}
+
+
+/* 洗牌算法实现 */
+
+let getrandom = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+let shuffle = (arr) => {
+    for (let i = 0; i < arr.length; i++) {
+        let random = getrandom(0,i);
+        let t = arr[i];
+        arr[i] = arr[random];
+        arr[random] =t
+    }
+    return arr
+}
+
 export {
     debounce,
     Singer,
     getindex,
-    SingerMusic
+    SingerMusic,
+    playMode,
+    shuffle
 }

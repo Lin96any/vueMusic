@@ -22,21 +22,28 @@
           </div>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{currentTimer}}</span>
+            <div class="progress-bar-wrapper">
+              <progres :prence="prence" @update="updatetimer"></progres>
+            </div>
+            <span class="time time-r">{{durationTimer}}</span>
+          </div>
           <div class="operators">
-            <div class="icon i-left">
-              <i class="iconfont mode">&#xe60b;</i>
+            <div class="icon i-left" @click.stop.prevent="changemode">
+              <i class="iconfont" :class="iconsecon"></i>
             </div>
             <div class="icon i-left" @click.stop.prevent="preventMusic">
               <i class="iconfont icon-prev">&#xe62c;</i>
             </div>
-            <div class="icon i-center" @click="toggleplay">
+            <div class="icon i-center" @click.stop.prevent="toggleplay">
               <i class="iconfont" :class="toggleicon"></i>
             </div>
-            <div class="icon i-right" @click="nextMusic">
+            <div class="icon i-right" @click.stop.prevent="nextMusic">
               <i class="iconfont icon-test">&#xe632;</i>
             </div>
-            <div class="icon i-right">
-              <i class="iconfont">&#xe60c;</i>
+            <div class="icon i-right" @click.stop.prevent="likeMusic">
+              <i class="iconfont" :class="musiclikes"></i>
             </div>
           </div>
         </div>
@@ -60,23 +67,41 @@
         </div>
       </div>
     </transition>
-    <audio :src="MusicURL" ref="audios" @canplay="canplay" @error.stop.prevent="playerror"></audio>
+    <audio
+      :src="MusicURL"
+      ref="audios"
+      @canplay="canplay"
+      @error.stop.prevent="playerror"
+      @timeupdate.stop.prevent="timeupdate"
+    ></audio>
   </div>
 </template>
 
 <script>
 import Mixins from "utials/mixinStore";
+import { playMode, shuffle } from "utials/utials";
 import { MusicURL } from "network";
+import progres from "base/Progress";
+import { SetlikeMusic, GetlikeMusic } from "utials/storage";
 export default {
   mixins: [Mixins],
   name: "PlayYer.vue",
   data() {
     return {
       MusicURL: "",
-      playlock: false
+      playlock: false,
+      currentTimer: "",
+      durationTimer: "",
+      currenttimer: 0,
+      durationtimer: 0,
+      musiclike: false
     };
   },
   computed: {
+    /* 歌曲收藏图标切换 */
+    musiclikes() {
+      return this.musiclike ? "icon-icon-12" : "icon-xiai";
+    },
     /* 图标切换 */
     toggleicon() {
       let IconState = this.getplaying;
@@ -86,11 +111,64 @@ export default {
     imgrote() {
       let IconState = this.getplaying;
       return IconState ? "play" : "pause";
+    },
+    prence() {
+      return this.currenttimer / this.durationtimer;
+    },
+    /* 模式 */
+    iconsecon() {
+      return this.getmode === playMode.sequence
+        ? "icon-danquxunhuan"
+        : this.getmode === playMode.loop
+        ? "icon-icon-test8"
+        : "icon-icon-test9";
     }
+  },
+  components: {
+    progres
   },
   created() {},
   mounted() {},
   methods: {
+    /* 歌曲收藏点击切换 */
+    likeMusic() {
+      this.musiclike = !this.musiclike;
+
+      if (this.musiclike) {
+        let like = this.getcurrentSong;
+        let getlikemusic = GetlikeMusic("music");
+
+        if (!getlikemusic) {
+          return SetlikeMusic("music", like);
+        }
+        let item = getlikemusic.find(item => {
+          return item.MusicId === like.MusicId;
+        });
+        item ? "" : SetlikeMusic("music", like);
+      }
+    },
+    /* 模式切换 */
+    changemode() {
+      let mode = (this.getmode + 1) % 3;
+
+      this.setmode(mode);
+      let list = null;
+      if (mode === playMode.random) {
+        list = shuffle(this.getsequenceList);
+      } else {
+        list = this.getsequenceList;
+      }
+      this.setplaylists(list);
+      this._resetIndex(list);
+    },
+    _resetIndex(list) {
+      /* 找出当前所播放歌曲在当前列表的索引 */
+      let index = list.findIndex(item => {
+        return item.MusicId === this.getcurrentSong.MusicId;
+      });
+
+      this.setcurrentIndex(index);
+    },
     back() {
       this.setfullScreen(false);
     },
@@ -104,17 +182,13 @@ export default {
       playing ? el.play() : el.pause();
     },
     /* 下一曲 */
-  async nextMusic() {
-        let indexs = this.getcurrentIndex;
-        indexs++;
-        this.setcurrentIndex(indexs);
-        let item = this.getplaylists[indexs];
-        let musicurl = await MusicURL(item.MusicId);
-        this.setMusicUrl(musicurl.data);
-        this.playlock = false;
+    nextMusic() {
+      let indexs = this.getcurrentIndex;
+      indexs++;
+      this._request(indexs);
     },
     /* 上一曲 */
-    async preventMusic() {
+    preventMusic() {
       if (!this.playlock) {
         return;
       }
@@ -122,19 +196,49 @@ export default {
       if (indexs > 0) {
         indexs--;
       }
-      this.setcurrentIndex(indexs);
-      let item = this.getplaylists[indexs];
+      this._request(indexs);
+    },
+    /* 歌曲请求 */
+    async _request(index) {
+      this.setcurrentIndex(index);
+      this.musiclike = false;
+      let item = this.getplaylists[index];
       let musicurl = await MusicURL(item.MusicId);
       this.setMusicUrl(musicurl.data);
       this.playlock = false;
+      this.setplaying(true);
     },
     canplay() {
       this.playlock = true;
     },
     playerror(err) {
-      console.log(1);
-
       this.playlock = true;
+    },
+    timeupdate(e) {
+      /* 当前播放时间 */
+      let timer = e.target.currentTime;
+      this.currenttimer = timer;
+      /* 播放总时间 */
+      let durationtimer = e.target.duration;
+      this.durationtimer = durationtimer;
+      /* 对当前播放时间进行处理 */
+      let minue = Math.floor(timer / 60);
+      let secont = Math.ceil(timer % 60);
+      secont = secont > 9 ? secont : "0" + secont;
+      this.currentTimer = `${minue}:${secont}`;
+
+      /* 对总时间进行处理 */
+      if (durationtimer) {
+        let dminue = Math.floor(durationtimer / 60);
+        let dsecont = Math.ceil(durationtimer % 60);
+        this.durationTimer = `${dminue}:${dsecont}`;
+      }
+    },
+    updatetimer(update) {
+      this.$refs.audios.currentTime = update * this.durationtimer;
+      if (!this.getplaying) {
+        this.toggleplay();
+      }
     }
   },
   watch: {
@@ -143,6 +247,25 @@ export default {
       this.$nextTick(() => {
         this.$refs.audios.play();
       });
+    },
+    getcurrentSong(newval, oldval) {
+      // console.log(this.getcurrentIndex);
+    },
+    getplaylists(val, old) {
+      if (val.MusicId === old.MusicId) {
+        return;
+      }
+    },
+    getcurrentSong(val) {
+      /* 从storage中获取喜爱歌曲，判断是否有当前播放的歌曲 */
+      let getlikemusic = GetlikeMusic("music");
+      let item = getlikemusic.find(item => {
+        return item.MusicId === val.MusicId;
+      });
+      /* 如果有则改变图标 */
+      if (item) {
+        this.musiclike = true;
+      }
     }
   }
 };

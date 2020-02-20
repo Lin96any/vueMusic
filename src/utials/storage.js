@@ -35,3 +35,21 @@ export const GetObject = (singername) => {
         return null
     }
 }
+
+export const SetlikeMusic = (musiclike, val) => {
+    let music = GetLocalstorage(`${musiclike}-like`);
+    if (!music) {
+        music = []
+    }
+    music.push(val);
+    SetLocalStorage(`${musiclike}-like`, music)
+};
+
+export const GetlikeMusic = (musiclike) => {
+    let music = GetLocalstorage(`${musiclike}-like`);
+    if (music) {
+        return music
+    } else {
+        return null
+    }
+}
