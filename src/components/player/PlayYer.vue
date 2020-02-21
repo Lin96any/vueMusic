@@ -12,16 +12,41 @@
           <h1 class="title">{{getcurrentSong.MusicName}}</h1>
           <h2 class="subtitle">{{`${getcurrentSong.SingerName} - ${getcurrentSong.AlbumName}`}}</h2>
         </div>
-        <div class="middle">
-          <div class="middle-l">
+        <div
+          class="middle"
+          @touchstart.stop="togglestart"
+          @touchmove.stop="togglemove"
+          @touchend.stop="toggleend"
+        >
+          <div class="middle-l" ref="cds">
             <div class="cd-wrapper">
               <div class="cd" :class="imgrote">
                 <img :src="getcurrentSong.AlbumImage" class="image" />
               </div>
             </div>
+            <div class="play-lyric-wrapper">
+              <div class="play-lyric">{{playric}}</div>
+            </div>
           </div>
+          <scroll class="middle-r" ref="lyrci" :data="lyric.lines">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p
+                  ref="lyricLine"
+                  class="text"
+                  v-for="(item,index) in lyric.lines"
+                  :key="index"
+                  :class="{current:index === currentLyIndex}"
+                >{{item.txt}}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
+          <div class="pointer-wrapper">
+            <span class="pointer" :class="{active:porwer==='music'}"></span>
+            <span class="pointer" :class="{active:porwer==='lyric'}"></span>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{currentTimer}}</span>
             <div class="progress-bar-wrapper">
@@ -73,6 +98,7 @@
       @canplay="canplay"
       @error.stop.prevent="playerror"
       @timeupdate.stop.prevent="timeupdate"
+      @ended="musicend"
     ></audio>
   </div>
 </template>
@@ -80,9 +106,21 @@
 <script>
 import Mixins from "utials/mixinStore";
 import { playMode, shuffle } from "utials/utials";
-import { MusicURL } from "network";
+import { MusicURL, Lyric } from "network";
 import progres from "base/Progress";
 import { SetlikeMusic, GetlikeMusic } from "utials/storage";
+import Scroll from "components/scroll/Scroll";
+import { prefixStyle } from "utials/dom";
+
+/* 引入lyric包 */
+import lyricc from "lyric-parser";
+
+let transform = prefixStyle("transform");
+let transitionDuration = prefixStyle("transitionDuration");
+const timer = 300;
+
+let innerWidth = document.documentElement.clientWidth;
+
 export default {
   mixins: [Mixins],
   name: "PlayYer.vue",
@@ -94,7 +132,13 @@ export default {
       durationTimer: "",
       currenttimer: 0,
       durationtimer: 0,
-      musiclike: false
+      musiclike: false,
+      mode:'',
+      currentLyric: true,
+      lyric: {},
+      currentLyIndex: 0,
+      porwer: "music",
+      playric: ""
     };
   },
   computed: {
@@ -118,18 +162,76 @@ export default {
     /* 模式 */
     iconsecon() {
       return this.getmode === playMode.sequence
-        ? "icon-danquxunhuan"
-        : this.getmode === playMode.loop
         ? "icon-icon-test8"
+        : this.getmode === playMode.loop
+        ? "icon-danquxunhuan" 
         : "icon-icon-test9";
     }
   },
   components: {
-    progres
+    progres,
+    Scroll
   },
-  created() {},
+  created() {
+    this.touch = {};
+  },
   mounted() {},
   methods: {
+    /* middle-Touch事件 */
+    togglestart(e) {
+      /* 记录初始位置 */
+      this.touch.init = false;
+      this.touch.startX = e.changedTouches[0].pageX;
+    },
+    togglemove(e) {
+      this.touch.init = true;
+      let moveX = e.changedTouches[0].pageX;
+      /* 判断当前显示状态 */
+      this.touch.refrence = this.porwer === "music" ? 0 : -innerWidth;
+      let disX = Math.floor(moveX - this.touch.startX) + this.touch.refrence;
+      /* 范围限制 */
+      let offsetWidth = Math.min(0, Math.max(-innerWidth, disX));
+      /* 计算比例 */
+      this.touch.refren = Math.abs(offsetWidth / innerWidth);
+      /* opacity */
+      this.touch.opacity = 1 - this.touch.refren;
+      this.$refs.lyrci.$el.style[
+        transform
+      ] = `translate3d(${offsetWidth}px,0,0)`;
+      this.$refs.cds.style.opacity = `${this.touch.opacity}`;
+    },
+    toggleend(e) {
+      if (!this.touch.init) {
+        return;
+      }
+      let offsetWidth = null;
+
+      if (this.porwer === "music") {
+        if (this.touch.refren > 0.2) {
+          offsetWidth = -innerWidth;
+          this.porwer = "lyric";
+          this.$refs.cds.style.opacity = `0`;
+        } else {
+          offsetWidth = 0;
+          this.$refs.cds.style.opacity = `1`;
+        }
+      } else {
+        if (this.touch.refren < 0.8) {
+          offsetWidth = 0;
+          this.porwer = "music";
+          this.$refs.cds.style.opacity = `1`;
+        } else {
+          offsetWidth = -innerWidth;
+          this.$refs.cds.style.opacity = `0`;
+        }
+      }
+
+      this.$refs.lyrci.$el.style[transitionDuration] = `${timer}`;
+
+      this.$refs.lyrci.$el.style[
+        transform
+      ] = `translate3d(${offsetWidth}px,0,0)`;
+    },
     /* 歌曲收藏点击切换 */
     likeMusic() {
       this.musiclike = !this.musiclike;
@@ -150,8 +252,8 @@ export default {
     /* 模式切换 */
     changemode() {
       let mode = (this.getmode + 1) % 3;
-
       this.setmode(mode);
+      this.mode = mode;
       let list = null;
       if (mode === playMode.random) {
         list = shuffle(this.getsequenceList);
@@ -180,12 +282,27 @@ export default {
       let playing = this.getplaying;
       let el = this.$refs.audios;
       playing ? el.play() : el.pause();
+      this.MusicPlaying = this.getplaying;
+      if (!this.getplaying) {
+        this.lyric.togglePlay();
+      }
     },
     /* 下一曲 */
     nextMusic() {
-      let indexs = this.getcurrentIndex;
-      indexs++;
-      this._request(indexs);
+      if (this.getplaylists.length === 1) {
+        this.loop();
+        return;
+      } else {
+        let indexs = this.getcurrentIndex;
+        indexs++;
+        if (indexs === this.getplaylists.length) {
+          indexs = 0;
+        }
+        this._request(indexs);
+        if (!this.getplaying) {
+          this.togglePlaying();
+        }
+      }
     },
     /* 上一曲 */
     preventMusic() {
@@ -234,10 +351,52 @@ export default {
         this.durationTimer = `${dminue}:${dsecont}`;
       }
     },
+    /* 播放时间改变 */
     updatetimer(update) {
-      this.$refs.audios.currentTime = update * this.durationtimer;
+      let currentTime = update * this.durationtimer;
+      this.$refs.audios.currentTime = currentTime;
       if (!this.getplaying) {
         this.toggleplay();
+      }
+      if (this.lyric) {
+        this.lyric.seek(currentTime * 1000);
+      }
+    },
+    /* 歌词处理 */
+    lyrciManage(str) {
+      let lyc = new lyricc(str, this.handleLyc);
+      this.lyric = lyc;
+      if (this.getplaying) {
+        this.lyric.play();
+      }
+    },
+    /* 歌词高亮 */
+    handleLyc({ lineNum, txt }) {
+      this.currentLyIndex = lineNum;
+      let list = this.$refs.lyricLine;
+      if (lineNum > 5) {
+        this.$refs.lyrci.scrollElement(list[lineNum - 5], 1000);
+      } else {
+        this.$refs.lyrci.scrollTo(0, 0, 0, 1000);
+      }
+      this.playric = txt;
+    },
+    /* 播放结束 */
+    musicend() {
+      if (this.mode === playMode.loop) {
+        
+        this.loop();
+      } else {
+        this.nextMusic();
+      }
+    },
+    /* 循环播放 */
+    loop() {
+      this.$refs.audios.currentTime = 0;
+      this.$refs.audios.play();
+      this.setplaying(true);
+      if (this.lyric) {
+        this.lyric.seek(0);
       }
     }
   },
@@ -248,15 +407,12 @@ export default {
         this.$refs.audios.play();
       });
     },
-    getcurrentSong(newval, oldval) {
-      // console.log(this.getcurrentIndex);
-    },
     getplaylists(val, old) {
       if (val.MusicId === old.MusicId) {
         return;
       }
     },
-    getcurrentSong(val) {
+    async getcurrentSong(val) {
       /* 从storage中获取喜爱歌曲，判断是否有当前播放的歌曲 */
       let getlikemusic = GetlikeMusic("music");
       let item = getlikemusic.find(item => {
@@ -266,6 +422,16 @@ export default {
       if (item) {
         this.musiclike = true;
       }
+
+      if (this.lyric) {
+        this.lyric.stop && this.lyric.stop();
+      }
+      /* 获取歌词 */
+      // MusicId
+      let lyricdata = await Lyric(val.MusicId);
+      /* 歌词处理 */
+      let lyrics = lyricdata.lrc.lyric;
+      this.lyrciManage(lyrics);
     }
   }
 };
@@ -352,7 +518,6 @@ export default {
       }
     }
     .middle {
-      display: flex;
       align-items: center;
       position: fixed;
       width: 100%;
@@ -403,6 +568,24 @@ export default {
             }
           }
         }
+        .play-lyric-wrapper {
+          position: absolute;
+          bottom: -1.3rem;
+          height: 0.6rem;
+          width: 4rem;
+          left: 50%;
+          transform: translate3d(-50%, 0, 0);
+          // background: orange;
+          display: flex;
+          // justify-content: center;
+          .play-lyric {
+            width: 100%;
+            line-height: 0.6rem;
+            font-size: 0.32rem;
+            color: $color-text-lm;
+            text-align: center;
+          }
+        }
       }
       .middle-r {
         display: inline-block;
@@ -426,7 +609,7 @@ export default {
           overflow: hidden;
           text-align: center;
           .text {
-            line-height: 40px;
+            line-height: 0.8rem;
             color: $color-text-ggg;
             font-size: $font-size-medium;
             &.current {
@@ -434,7 +617,7 @@ export default {
             }
           }
           .no-lyric {
-            line-height: 40px;
+            line-height: 0.8rem;
             margin-top: 60%;
             color: $color-text-ggg;
             font-size: $font-size-medium;
@@ -443,6 +626,25 @@ export default {
       }
     }
     .bottom {
+      .pointer-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .pointer {
+          display: inline-block;
+          width: 0.2rem;
+          height: 0.2rem;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.6);
+          transition: all 0.5s linear;
+          margin-right: 0.1rem;
+          &.active {
+            width: 0.5rem;
+            height: 0.2rem;
+            border-radius: 0.16rem;
+          }
+        }
+      }
       position: absolute;
       bottom: 1rem;
       width: 100%;

@@ -19,7 +19,6 @@ let singerMusic = (id)=>{
 }
 
 /* 根据id获取歌手50首热门歌曲 */
-
 let singerHotMusic = (id) => {
     let url = '/artist/top/song?id=' + id + '';
     return createAxios(url)
@@ -30,10 +29,17 @@ let MusicURL = (id)=>{
     return createAxios(url)
 }
 
+/* 根据歌曲id获取歌词接口 */
+let Lyric = (id) => {
+    let url = '/lyric?id=' + id + '';
+    return createAxios(url)
+}
+
 export {
     newsmusic,
     hotSinger,
     singerMusic,
     singerHotMusic,
-    MusicURL
+    MusicURL,
+    Lyric
 }
