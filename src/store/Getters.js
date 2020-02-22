@@ -13,7 +13,8 @@ let getters = {
     getcurrentSong:state=>{
         return state.music.playlists[state.music.currentIndex] || {}
     },
-    getmusicUrl: state => state.music.MusicUrl
+    getmusicUrl: state => state.music.MusicUrl,
+    getbs: state => state.music.Bsobj
 }
 
 export default getters

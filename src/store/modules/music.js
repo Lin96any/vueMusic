@@ -25,8 +25,13 @@ const music = {
         mode: playMode.sequence,
         // 当前播放索引
         currentIndex: -1,
+        /* scroll对象 */
+        Bsobj:{}
     },
     mutations: {
+        'SET_BSOBJ': (state, obj) => {
+            state.Bsobj = obj
+        },
         //歌单列表
         'SET_PLAYLIST': (state, list) => {
             state.playlist.push(...list)
@@ -66,6 +71,9 @@ const music = {
         }
     },
     actions: {
+        setbsobj:({commit},obj)=>{
+            commit('SET_BSOBJ', obj)
+        },
         setMusicUrl:({commit},url)=>{
             commit('SET_MUSICURL',url)
         },

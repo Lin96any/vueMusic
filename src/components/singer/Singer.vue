@@ -1,6 +1,6 @@
 <template>
-  <div class="singer" >
-    <list-view :data="this.artists" @selectSinger="singeritem"></list-view>
+  <div class="singer" ref='singer'>
+    <list-view :data="this.artists" @selectSinger="singeritem" ref="list"></list-view>
     <transition name="slide">
       <router-view></router-view>
     </transition>
@@ -11,7 +11,7 @@
 import { hotSinger } from "network";
 import { Singer } from "utials/utials";
 import ListView from "base/ListView";
-import {SetObject,GetObject,SetLocalStorage} from "utials/storage";
+import { SetObject, GetObject, SetLocalStorage } from "utials/storage";
 /* 加载pinyin库 */
 import pinyin from "pinyin";
 
@@ -31,6 +31,11 @@ export default {
     this._gethotsinger();
   },
   methods: {
+    handle(list) {
+      const bottom = list.length > 0 ? "1.2rem" : "";
+      this.$refs.singer.style.bottom = bottom;
+      this.getbs.refresh();
+    },
     //对数据进行首字母处理，用于排序
     async _gethotsinger(offset = 0, limit = 100) {
       let hotsingerdata = await hotSinger(offset, limit);
@@ -106,14 +111,19 @@ export default {
       return hot.concat(ret);
     },
     singeritem(item) {
-      SetObject('singer',item)
+      SetObject("singer", item);
       this.$router.push({
-        path: "/home/singer/singerdetial",
+        path: "/home/singer/singerdetial"
       });
     }
   },
   components: {
     ListView
+  },
+  watch: {
+    getplaylists(newval) {
+      this.handle(newval);
+    }
   }
 };
 </script>

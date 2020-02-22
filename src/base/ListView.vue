@@ -11,7 +11,12 @@
       <li v-for="group in data" :key="group.title" class="list-group" ref="listgroup">
         <p class="list-group-title">{{group.title}}</p>
         <ul>
-          <li v-for="item in group.item" :key="item.id" class="list-group-item"  @click='selectitem(item)'>
+          <li
+            v-for="item in group.item"
+            :key="item.id"
+            class="list-group-item"
+            @click="selectitem(item)"
+          >
             <img v-lazy="item.avatar" alt class="avatar" />
             <p class="name">{{item.name}}</p>
           </li>
@@ -32,8 +37,8 @@
     <div class="list-fixed-tile" v-show="!positive">
       <div class="title">{{fixedtitle}}</div>
     </div>
-    <div class="loading" v-show='!this.data.length'>
-        <loading></loading>
+    <div class="loading" v-show="!this.data.length">
+      <loading></loading>
     </div>
   </scroll>
 </template>
@@ -41,8 +46,10 @@
 <script>
 import Scroll from "components/scroll/Scroll";
 import { getindex } from "utials/utials";
-import loading from 'base/loading/loading'
+import loading from "base/loading/loading";
+import Mixins from "utials/mixinStore";
 export default {
+   mixins: [Mixins],
   name: "ListView.vue",
   props: {
     data: {
@@ -94,7 +101,8 @@ export default {
     loading
   },
   methods: {
-      /* 点击short滚动到指定区域 */
+
+    /* 点击short滚动到指定区域 */
     onshort(e) {
       let index = getindex(e.target, "index");
       let firstTouch = e.changedTouches[0];
@@ -128,10 +136,9 @@ export default {
         this.allScroll.push(initscroll);
       });
     },
-    selectitem(item){
-        /* 事件派发出去 */
-        this.$emit('selectSinger',item)
-        
+    selectitem(item) {
+      /* 事件派发出去 */
+      this.$emit("selectSinger", item);
     }
   },
   watch: {
@@ -150,7 +157,8 @@ export default {
         }
         this.ScrollIndex = 0;
       }
-    }
+    },
+ 
   }
 };
 </script>
@@ -158,7 +166,7 @@ export default {
 <style lang="scss" scoped>
 @import "assets/scss/variable";
 .listview {
-  position: positon;
+  position: absolute;
   width: 100%;
   height: 100%;
   overflow: hidden;

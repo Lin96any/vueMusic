@@ -8,8 +8,8 @@
         <h1 class="txt">{{headertitle}}</h1>
       </div>
     </div>
-    <div class="disponse">
-      <scroll :data="disposeMusicData" class="musicScroll">
+    <div class="disponse" ref='listwrapper'>
+      <scroll :data="disposeMusicData" class="musicScroll" ref="list">
         <div class="wrappers">
           <div class="img">
             <div class="bgimg" :style="bgimg"></div>
@@ -115,11 +115,21 @@ export default {
       this.selectPlay({ list: this.disposeMusicData, index: index });
       let musicurl = await MusicURL(item.MusicId);
       this.setMusicUrl(musicurl.data);
+    },
+    handle(list) {
+
+      const bottom = list.length > 0 ? "1.2rem" : "";
+      this.$refs.listwrapper.style.bottom = bottom;
+      this.getbs.refresh();
+      
     }
   },
   watch: {
     MusicData(node) {
       this.disposeMusicData = this._Normal_DisposeData(node);
+    },
+    getplaylists(newval) {
+      this.handle(newval);
     }
   }
 };
@@ -172,6 +182,7 @@ export default {
     bottom: 0;
     width: 100%;
     .musicScroll {
+      height: 100%;
       background: $color-background;
       .wrappers {
         .img {

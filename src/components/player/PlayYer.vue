@@ -133,7 +133,7 @@ export default {
       currenttimer: 0,
       durationtimer: 0,
       musiclike: false,
-      mode:'',
+      mode: "",
       currentLyric: true,
       lyric: {},
       currentLyIndex: 0,
@@ -164,7 +164,7 @@ export default {
       return this.getmode === playMode.sequence
         ? "icon-icon-test8"
         : this.getmode === playMode.loop
-        ? "icon-danquxunhuan" 
+        ? "icon-danquxunhuan"
         : "icon-icon-test9";
     }
   },
@@ -205,7 +205,7 @@ export default {
         return;
       }
       let offsetWidth = null;
-
+      /* 判断当前状态 */
       if (this.porwer === "music") {
         if (this.touch.refren > 0.2) {
           offsetWidth = -innerWidth;
@@ -284,7 +284,8 @@ export default {
       playing ? el.play() : el.pause();
       this.MusicPlaying = this.getplaying;
       if (!this.getplaying) {
-        this.lyric.togglePlay();
+        let that = this;
+        that.lyric.togglePlay();
       }
     },
     /* 下一曲 */
@@ -384,7 +385,6 @@ export default {
     /* 播放结束 */
     musicend() {
       if (this.mode === playMode.loop) {
-        
         this.loop();
       } else {
         this.nextMusic();

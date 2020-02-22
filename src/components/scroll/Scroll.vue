@@ -26,8 +26,8 @@ export default {
       }
     },
     listenScroll: {
-      type:Boolean,
-      default:false
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -36,6 +36,7 @@ export default {
     }, 20);
   },
   methods: {
+
     _initScroll() {
       if (!this.$refs.wrapper) {
         return;
@@ -45,13 +46,12 @@ export default {
         probeType: this.probeType
       });
       this.setbs(this.scroll);
-
-      if(this.listenScroll){
-        this.scroll.on('scroll',(poy)=>{
-            this.$emit('scroll',poy)
-        })
+      this.setbsobj(this.scroll);
+      if (this.listenScroll) {
+        this.scroll.on("scroll", poy => {
+          this.$emit("scroll", poy);
+        });
       }
-
     },
     enable() {
       this.scroll && this.scroll.enable();
@@ -80,7 +80,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
-  height: 100%;
-}
+
 </style>

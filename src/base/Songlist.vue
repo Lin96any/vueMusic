@@ -52,7 +52,6 @@ export default {
 <style lang="scss" scoped>
 @import "assets/scss/variable";
 .song {
-    padding-bottom: .5rem;
   .item-wrapper {
     display: flex;
     margin-top: 0.2rem;

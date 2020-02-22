@@ -11,10 +11,14 @@ let Mixins = {
             'getmode',
             'getcurrentIndex',
             'getcurrentSong'
-            , 'getmusicUrl']),
+            , 'getmusicUrl'
+            ,'getbs']),
         boudou() {
             return debounce(this.getbs.refresh, 1000)
         }
+    },
+    mouted() {
+        this.handle(this.getplaylists)
     },
     methods: {
         ...mapActions(['setPlaylist',
@@ -27,8 +31,11 @@ let Mixins = {
             'setplaylists',
             'setsequenceList',
             'setcurrentIndex',
-            'setmode', 'selectPlay', 'setMusicUrl']),
+            'setmode', 'selectPlay', 'setMusicUrl','setbsobj']),
     },
+
+    watch: {
+    }
 }
 
 export default Mixins

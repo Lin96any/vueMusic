@@ -7,7 +7,7 @@
       </div>
       <!-- 根据歌单数据循环生成 -->
       <div class="play_list_content">
-        <div class="play_list_container" v-for="(item,index) in getPlaylist" :key="item.id">
+        <div class="play_list_container" v-for="(item) in getPlaylist" :key="item.id">
           <div class="play_list_container_img">
             <img v-lazy="item.coverImgUrl" />
           </div>
@@ -15,7 +15,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -35,7 +34,7 @@ export default {
   mounted() {},
   methods: {
     imgload() {
-      this.$emit('loadings')
+      this.$emit('loadings');
     }
   }
 };
@@ -63,7 +62,7 @@ export default {
       .play_list_container {
         width: 2.2rem;
         height: 3rem;
-        margin: .1rem;
+        margin: 0.1rem;
         .play_list_container_img {
           width: 100%;
           height: 2.2rem;

@@ -1,5 +1,5 @@
 <template>
-  <div class="recoments">
+  <div class="recoments" ref="recoments">
     <scroll class="recoments_wrapper" :data="banner" ref="scroll">
       <div class="recoments_wrapper_content">
         <slider :banners="banner"></slider>
@@ -61,10 +61,19 @@ export default {
         }, 2000);
       }
     },
-
+    handle(list) {
+      const bottom = list.length > 0 ? "1.2rem" : "";
+      this.$refs.recoments.style.bottom = bottom;
+      this.getbs.refresh();
+    },
     /* 获取新歌速递 */
     getnewmusic(type) {
       newsmusic(type).then(res => {});
+    }
+  },
+  watch: {
+    getplaylists(newval) {
+      this.handle(newval);
     }
   }
 };
@@ -79,6 +88,7 @@ export default {
   bottom: 0;
   width: 100%;
   .recoments_wrapper {
+    height: 100%;
     overflow: hidden;
     .recoments_wrapper_content {
       .playmargin {
