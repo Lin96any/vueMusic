@@ -20,7 +20,7 @@
 
 #### 项目体验
 
-+ 请扫描二维码  
++ 请扫描二维码体验
 
 + ![avatar](http://mills-lin.oss-cn-hangzhou.aliyuncs.com/images/%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%9B%BE%E7%89%87_2%E6%9C%8827%E6%97%A521%E6%97%B625%E5%88%8654%E7%A7%92.png)
 
