@@ -19,7 +19,7 @@
 
 #### 安装教程
 
-1. $git clone (<https://gitee.com/Big_Smail/webapp_of_netease_cloud_music.git>)
+1. $git clone (<https://github.com/Lin96any/vueMusic.git>)
 2. $npm install
 3. $npm run serve 或 $npm start
 
