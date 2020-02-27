@@ -15,6 +15,7 @@
           <div class="count">
             <h2>{{item.MusicName}}</h2>
             <p>{{getDesc(item)}}</p>
+            <p>{{item.SingerName}}</p>
           </div>
         </div>
       </li>
@@ -51,6 +52,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "assets/scss/variable";
+@import "assets/scss/mixin";
 .song {
   .item-wrapper {
     display: flex;
@@ -74,7 +76,8 @@ export default {
       }
       .count {
         width: 4rem;
-        font-size: 0.32rem;
+        font-size: 0.24rem;
+        @include no-wrap();
         h2 {
           line-height: 2;
         }

@@ -8,20 +8,27 @@ let routes = [
         path: '/home',
         name: 'Home',
         component: () => import('views/home/Home.vue'),
-        children:[
+        children: [
             {
                 path: 'recoments',
                 name: 'Recoments',
-                component: () => import('components/recoments/Recoments.vue')
+                component: () => import('components/recoments/Recoments.vue'),
+                children: [
+                    {
+                        path: 'songdetails',
+                        name: 'SongListDetails',
+                        component: () => import('components/songList/SongListDetails')
+                    }
+                ]
             },
             {
                 path: 'singer',
                 name: 'Singer',
                 component: () => import('components/singer/Singer.vue'),
-                children:[
+                children: [
                     {
-                        path:'singerdetial',
-                        name:'SingerDetails',
+                        path: 'singerdetial',
+                        name: 'SingerDetails',
                         component: () => import('components/singer/Children/SingerDetails')
                     }
                 ]

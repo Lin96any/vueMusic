@@ -1,8 +1,13 @@
 <template>
   <div class="tab">
     <div class="tab-wrapper">
-      <div class="tab-item" v-for="(item,index) in tablist" :key="item" @click="routerview(index)">
-        <span :class="{'action':currentIndex==index}">{{item}}</span>
+      <div
+        class="tab-item"
+        v-for="(item,index) in tablist"
+        :key="index"
+        @click="routerview(item.path)"
+      >
+        <span :class="{'action':$route.path ===item.path}">{{item.title}}</span>
       </div>
     </div>
   </div>
@@ -20,14 +25,7 @@ export default {
       }
     }
   },
-  created() {
-    let current = GetLocalstorage("currentIndex");
-    if (!current) {
-      this.currentIndex = 0;
-    } else {
-      this.currentIndex = current;
-    }
-  },
+  created() {},
   data() {
     return {
       currentIndex: 0,
@@ -35,11 +33,10 @@ export default {
     };
   },
   methods: {
-    routerview(index) {
-      this.currentIndex = index;
-      SetLocalStorage("currentIndex", index);
+    routerview(path) {
+      SetLocalStorage("currentIndex", path);
       this.$router.push({
-        path: "/home" + this.routerlist[index]
+        path: path
       });
     }
   }
@@ -54,7 +51,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: .1rem 0 .3rem 0;
+  padding: 0.1rem 0 0.3rem 0;
   .tab-wrapper {
     @include center();
     .tab-item {
@@ -66,7 +63,7 @@ export default {
         color: $color-text-ll;
         padding: 0.1rem 0.2rem;
         border-bottom: 0;
-        transition: all .2s linear;
+        transition: all 0.2s linear;
         &.action {
           border-bottom: 0.04rem solid $color-text-ll;
           color: $color-text-l;

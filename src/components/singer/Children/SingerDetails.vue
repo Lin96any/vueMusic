@@ -2,19 +2,19 @@
   <div class="singer_detials">
     <div class="header" ref="header">
       <div class="icon" @click="goback">
-        <i class="iconfont">&#xe63e;</i>
+        <i class="iconfont">&#xe671;</i>
       </div>
       <div class="headertxt">
         <h1 class="txt">{{headertitle}}</h1>
       </div>
     </div>
-    <div class="disponse" ref='listwrapper'>
+    <div class="disponse" ref="listwrapper">
       <scroll :data="disposeMusicData" class="musicScroll" ref="list">
         <div class="wrappers">
           <div class="img">
             <div class="bgimg" :style="bgimg"></div>
-            <div class="playtx">
-              <span class="iconfont">&#xe60d;</span>
+            <div class="playtx" @click='random'>
+              <span class="iconfont">&#xe664;</span>
               <span>随机播放</span>
             </div>
           </div>
@@ -77,6 +77,11 @@ export default {
     }
   },
   methods: {
+    random() {
+      this.randomPlay({
+        list: this.disposeMusicData
+      });
+    },
     async _initmusic(id) {
       let data = await singerHotMusic(id);
       let { name, avatar } = GetObject("singer");
@@ -117,19 +122,14 @@ export default {
       this.setMusicUrl(musicurl.data);
     },
     handle(list) {
-
       const bottom = list.length > 0 ? "1.2rem" : "";
       this.$refs.listwrapper.style.bottom = bottom;
       this.getbs.refresh();
-      
     }
   },
   watch: {
     MusicData(node) {
       this.disposeMusicData = this._Normal_DisposeData(node);
-    },
-    getplaylists(newval) {
-      this.handle(newval);
     }
   }
 };

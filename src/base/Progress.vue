@@ -5,9 +5,9 @@
       <div
         class="progress-btn"
         ref="btn"
-        @touchstart.prevent="progressTouchStart"
-        @touchmove.prevent="progressTouchMove"
-        @touchend.prevent="progressTouchEnd"
+        @touchstart.stop.prevent="progressTouchStart"
+        @touchmove.stop.prevent="progressTouchMove"
+        @touchend.stop.prevent="progressTouchEnd"
       >
         <div class="btn"></div>
       </div>

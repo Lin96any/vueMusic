@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <headers></headers>
-    <tab :tablist=tablist></tab>
+    <tab :tablist="tabList"></tab>
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -9,27 +9,39 @@
 </template>
 
 <script>
-import {Banner} from "network";
-import Headers from 'components/head/head';
-import tab from './homeChild/Tab';
+import { Banner } from "network";
+import Headers from "components/head/head";
+import tab from "./homeChild/Tab";
 export default {
   name: "Home",
   data() {
     return {
       banner: [],
-      tablist:['推荐','排行','热门歌手']
+      tabList: [
+        {
+          title: "推荐",
+          path: "/home/recoments"
+        },
+        {
+          title: "排行",
+          path: "/home/rank"
+        },
+        {
+          title: "歌手",
+          path: "/home/singer"
+        }
+      ]
     };
   },
   components: {
     Headers,
     tab
   }
-
 };
 </script>
 
 <style lang="scss" scoped>
-.home{
+.home {
   height: 100%;
 }
 </style>

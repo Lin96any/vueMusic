@@ -7,7 +7,12 @@
       </div>
       <!-- 根据歌单数据循环生成 -->
       <div class="play_list_content">
-        <div class="play_list_container" v-for="(item) in getPlaylist" :key="item.id">
+        <div
+          class="play_list_container"
+          v-for="(item) in recoments"
+          :key="item.id"
+          @click="songlist(item)"
+        >
           <div class="play_list_container_img">
             <img v-lazy="item.coverImgUrl" />
           </div>
@@ -15,13 +20,17 @@
         </div>
       </div>
     </div>
+    <div class="loading_wrapper" v-show="!recoments">
+      <loading></loading>
+    </div>
   </div>
 </template>
 
 <script>
 import mixns from "utials/mixinStore";
 import { debounce } from "utials/utials";
-
+import { SetRanComents, GetRanComents } from "utials/storage";
+import loading from "base/loading/loading";
 export default {
   mixins: [mixns],
   name: "PlayList.vue",
@@ -30,11 +39,29 @@ export default {
       imgIndex: 0
     };
   },
+  computed: {
+    //判断
+    recoments() {
+      let recomentsdata = GetRanComents("recoments");
+      if (recomentsdata&&recomentsdata.length) {
+        return recomentsdata;
+      }else{
+        return this.getPlaylist
+      }
+    }
+  },
+  components: {
+    loading,
+  },
   created() {},
   mounted() {},
   methods: {
+    /* 歌单数据 */
+    songlist(item) {
+      this.$emit("songitems", item);
+    },
     imgload() {
-      this.$emit('loadings');
+      this.$emit("loadings");
     }
   }
 };
@@ -49,6 +76,7 @@ export default {
   padding: 0 0.1rem;
   box-sizing: border-box;
   background-color: $color-text-l;
+  position: relative;
   .hotplaylist {
     height: 100%;
     .play_list_title {
@@ -80,6 +108,14 @@ export default {
         }
       }
     }
+  }
+  .loading_wrapper {
+    position: absolute;
+    background: white;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
   }
 }
 </style>

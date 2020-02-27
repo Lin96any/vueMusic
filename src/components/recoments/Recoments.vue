@@ -3,22 +3,33 @@
     <scroll class="recoments_wrapper" :data="banner" ref="scroll">
       <div class="recoments_wrapper_content">
         <slider :banners="banner"></slider>
-        <play-list class="playmargin"></play-list>
-      </div>
-      <div class="loading_wrapper" v-show="!getPlaylist.length">
-        <loading></loading>
+        <play-list class="playmargin" @songitems="items"></play-list>
       </div>
     </scroll>
+
+    <transition name="details">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 
 <script>
-import { Banner, playlist, hotplaylist, newsmusic } from "network";
+import {
+  Banner,
+  playlist,
+  hotplaylist,
+  newsmusic,
+  SongListDetailsRequest
+} from "network";
 import Slider from "base/Slider";
 import mixns from "utials/mixinStore";
 import playList from "./PlayList";
 import scroll from "components/scroll/Scroll";
 import loading from "base/loading/loading";
+import { SongList } from "utials/utials";
+import { SetRanComents, GetRanComents } from "utials/storage";
 export default {
   mixins: [mixns],
   name: "Recoments.vue",
@@ -42,6 +53,20 @@ export default {
     // this.getnewmusic(7);
   },
   methods: {
+    items(item) {
+      /* 数据处理 */
+      let { id, name, coverImgUrl, description } = item;
+      
+      let songlist = new SongList(id, name, coverImgUrl, description);
+      this.setsonglist(songlist);
+      /* 路由跳转 */
+      this.songrouter();
+    },
+    songrouter() {
+      this.$router.push({
+        path: "/home/recoments/songdetails"
+      });
+    },
     /* 获取anner数据 0: pc  1: android，2: iphone ， 3: ipad*/
     async getBanner(type = 2) {
       let data = await Banner(type);
@@ -56,11 +81,11 @@ export default {
       let data = await hotplaylist();
       let { code, playlists, lasttime } = data;
       if (code === 200) {
-        setTimeout(() => {
-          this.setPlaylist(playlists);
-        }, 2000);
+        this.setPlaylist(playlists);
+        SetRanComents('recoments',playlists)
       }
     },
+
     handle(list) {
       const bottom = list.length > 0 ? "1.2rem" : "";
       this.$refs.recoments.style.bottom = bottom;
@@ -82,6 +107,15 @@ export default {
 <style lang="scss" scoped>
 @import "assets/scss/mixin";
 @import "assets/scss/variable.scss";
+.details-enter,
+.details-leave-to {
+  transform: translate3d(100%, 0, 0);
+}
+
+.details-enter-active,
+.details-leave-active {
+  transition: all 0.2s linear;
+}
 .recoments {
   position: absolute;
   top: 2.4rem;
@@ -94,14 +128,6 @@ export default {
       .playmargin {
         margin-top: 0.1rem;
       }
-    }
-    .loading_wrapper {
-      position: absolute;
-      background: $color-theme;
-      width: 100%;
-      top: 50%;
-      left: 50%;
-      transform: translateX(-50%);
     }
   }
 }

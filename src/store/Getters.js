@@ -10,11 +10,14 @@ let getters = {
     getsequenceList: state => state.music.sequenceList,
     getmode: state => state.music.mode,
     getcurrentIndex: state => state.music.currentIndex,
-    getcurrentSong:state=>{
+    getcurrentSong: state => {
         return state.music.playlists[state.music.currentIndex] || {}
     },
     getmusicUrl: state => state.music.MusicUrl,
-    getbs: state => state.music.Bsobj
+    getbs: state => state.music.Bsobj,
+    getsonglist: state => state.music.songlist,
+    getsongdetials: state => state.music.SongDetials,
+    getheardmusic: state => state.music.heardmusic
 }
 
 export default getters

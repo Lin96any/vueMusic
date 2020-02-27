@@ -11,7 +11,7 @@
 import { hotSinger } from "network";
 import { Singer } from "utials/utials";
 import ListView from "base/ListView";
-import { SetObject, GetObject, SetLocalStorage } from "utials/storage";
+import { SetObject, SetSinger,GetSinger } from "utials/storage";
 /* 加载pinyin库 */
 import pinyin from "pinyin";
 
@@ -28,7 +28,12 @@ export default {
     };
   },
   mounted() {
-    this._gethotsinger();
+    let singer = GetSinger('singer');
+    if(singer&&singer.length){
+      this.artists = singer
+    }else{
+       this._gethotsinger();
+    }
   },
   methods: {
     handle(list) {
@@ -50,7 +55,10 @@ export default {
           /* 获取首字母 */
           item.Findex = pinyins[0][0].toUpperCase().split("")[0];
         });
-        this.artists = this._normalizeSinger(artists);
+        let singer = this._normalizeSinger(artists);
+        this.artists = singer
+        SetSinger('singer',singer)
+        
       }
     },
     _normalizeSinger(list) {
@@ -121,9 +129,6 @@ export default {
     ListView
   },
   watch: {
-    getplaylists(newval) {
-      this.handle(newval);
-    }
   }
 };
 </script>

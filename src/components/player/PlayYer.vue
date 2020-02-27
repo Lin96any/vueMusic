@@ -7,7 +7,7 @@
         </div>
         <div class="top">
           <div class="back" @click="back">
-            <i class="iconfont fa-angle-down icon-icon-test13"></i>
+            <i class="iconfont fa-angle-down icon-fanhui"></i>
           </div>
           <h1 class="title">{{getcurrentSong.MusicName}}</h1>
           <h2 class="subtitle">{{`${getcurrentSong.SingerName} - ${getcurrentSong.AlbumName}`}}</h2>
@@ -59,13 +59,13 @@
               <i class="iconfont" :class="iconsecon"></i>
             </div>
             <div class="icon i-left" @click.stop.prevent="preventMusic">
-              <i class="iconfont icon-prev">&#xe62c;</i>
+              <i class="iconfont icon-prev">&#xe601;</i>
             </div>
             <div class="icon i-center" @click.stop.prevent="toggleplay">
               <i class="iconfont" :class="toggleicon"></i>
             </div>
             <div class="icon i-right" @click.stop.prevent="nextMusic">
-              <i class="iconfont icon-test">&#xe632;</i>
+              <i class="iconfont icon-test">&#xe602;</i>
             </div>
             <div class="icon i-right" @click.stop.prevent="likeMusic">
               <i class="iconfont" :class="musiclikes"></i>
@@ -88,17 +88,18 @@
           <i class="iconfont" :class="toggleicon"></i>
         </div>
         <div class="control">
-          <i class="iconfont icon-caidan1">&#xe647;</i>
+          <i class="iconfont icon-lishijilu"></i>
         </div>
       </div>
     </transition>
     <audio
       :src="MusicURL"
       ref="audios"
-      @canplay="canplay"
+      @play="canplay"
       @error.stop.prevent="playerror"
       @timeupdate.stop.prevent="timeupdate"
       @ended="musicend"
+      preload="preload"
     ></audio>
   </div>
 </template>
@@ -108,7 +109,12 @@ import Mixins from "utials/mixinStore";
 import { playMode, shuffle } from "utials/utials";
 import { MusicURL, Lyric } from "network";
 import progres from "base/Progress";
-import { SetlikeMusic, GetlikeMusic } from "utials/storage";
+import {
+  SetlikeMusic,
+  GetlikeMusic,
+  SaveHeardMusic,
+  GetHeardMusic
+} from "utials/storage";
 import Scroll from "components/scroll/Scroll";
 import { prefixStyle } from "utials/dom";
 
@@ -138,18 +144,19 @@ export default {
       lyric: {},
       currentLyIndex: 0,
       porwer: "music",
-      playric: ""
+      playric: "",
+      itemMusic: null
     };
   },
   computed: {
     /* 歌曲收藏图标切换 */
     musiclikes() {
-      return this.musiclike ? "icon-icon-12" : "icon-xiai";
+      return this.musiclike ? "icon-star" : "icon-shoucang";
     },
     /* 图标切换 */
     toggleicon() {
       let IconState = this.getplaying;
-      return IconState ? "icon-icon-test1" : "icon-icon-test2";
+      return IconState ? "icon-zanting" : "icon-bofangicon";
     },
     /* 图片旋转暂停 */
     imgrote() {
@@ -162,10 +169,10 @@ export default {
     /* 模式 */
     iconsecon() {
       return this.getmode === playMode.sequence
-        ? "icon-icon-test8"
+        ? "icon-shunxubofang2"
         : this.getmode === playMode.loop
-        ? "icon-danquxunhuan"
-        : "icon-icon-test9";
+        ? "icon-danquxunhuan1"
+        : "icon-shunxubofang";
     }
   },
   components: {
@@ -177,6 +184,13 @@ export default {
   },
   mounted() {},
   methods: {
+    /* 重置播放时间和总时间 */
+    timerReset() {
+      this.currentTimer = "0:00";
+      this.durationTimer = "0:00";
+      this.currenttimer = 0;
+      this.durationtimer = 0;
+    },
     /* middle-Touch事件 */
     togglestart(e) {
       /* 记录初始位置 */
@@ -283,13 +297,13 @@ export default {
       let el = this.$refs.audios;
       playing ? el.play() : el.pause();
       this.MusicPlaying = this.getplaying;
-      if (!this.getplaying) {
-        let that = this;
-        that.lyric.togglePlay();
+      if (this.lyric) {
+        this.lyric.togglePlay();
       }
     },
     /* 下一曲 */
     nextMusic() {
+      this.timerReset();
       if (this.getplaylists.length === 1) {
         this.loop();
         return;
@@ -301,12 +315,13 @@ export default {
         }
         this._request(indexs);
         if (!this.getplaying) {
-          this.togglePlaying();
+          this.toggleplay();
         }
       }
     },
     /* 上一曲 */
     preventMusic() {
+      this.timerReset();
       if (!this.playlock) {
         return;
       }
@@ -318,16 +333,40 @@ export default {
     },
     /* 歌曲请求 */
     async _request(index) {
-      this.setcurrentIndex(index);
+      this.timerReset();
+      this.musiclike = false;
+      if (this.getplaylists !== index) {
+        this.setcurrentIndex(index);
+      }
       this.musiclike = false;
       let item = this.getplaylists[index];
+      /* 将听过的歌曲保存在storage中 */
+      SaveHeardMusic("music", item);
+      this.setheardmusic(item);
+
       let musicurl = await MusicURL(item.MusicId);
       this.setMusicUrl(musicurl.data);
       this.playlock = false;
       this.setplaying(true);
     },
-    canplay() {
+    async canplay() {
       this.playlock = true;
+      /* 获取歌词 */
+      if (this.itemMusic) {
+        try {
+          // MusicId
+          let lyricdata = await Lyric(this.itemMusic[0].id);
+          /* 歌词处理 */
+          let lyrics = lyricdata.lrc.lyric;
+          this.lyrciManage(lyrics);
+        } catch (error) {
+          this.lyrciManage("暂无歌词");
+        }
+      }
+
+      if (this.getplaying) {
+        this.lyric.play();
+      }
     },
     playerror(err) {
       this.playlock = true;
@@ -359,6 +398,7 @@ export default {
       if (!this.getplaying) {
         this.toggleplay();
       }
+
       if (this.lyric) {
         this.lyric.seek(currentTime * 1000);
       }
@@ -367,14 +407,13 @@ export default {
     lyrciManage(str) {
       let lyc = new lyricc(str, this.handleLyc);
       this.lyric = lyc;
-      if (this.getplaying) {
-        this.lyric.play();
-      }
     },
+
     /* 歌词高亮 */
     handleLyc({ lineNum, txt }) {
       this.currentLyIndex = lineNum;
       let list = this.$refs.lyricLine;
+
       if (lineNum > 5) {
         this.$refs.lyrci.scrollElement(list[lineNum - 5], 1000);
       } else {
@@ -401,8 +440,10 @@ export default {
     }
   },
   watch: {
-    getmusicUrl(data) {
+    async getmusicUrl(data) {
       this.MusicURL = data[0].url;
+      this.itemMusic = data;
+
       this.$nextTick(() => {
         this.$refs.audios.play();
       });
@@ -415,23 +456,24 @@ export default {
     async getcurrentSong(val) {
       /* 从storage中获取喜爱歌曲，判断是否有当前播放的歌曲 */
       let getlikemusic = GetlikeMusic("music");
-      let item = getlikemusic.find(item => {
-        return item.MusicId === val.MusicId;
-      });
-      /* 如果有则改变图标 */
-      if (item) {
-        this.musiclike = true;
+      if (!this.MusicURL) {
+        let index = this.getcurrentIndex;
+        this._request(index);
+      }
+
+      if (getlikemusic) {
+        let item = getlikemusic.find(item => {
+          return item.MusicId === val.MusicId;
+        });
+        /* 如果有则改变图标 */
+        if (item) {
+          this.musiclike = true;
+        }
       }
 
       if (this.lyric) {
         this.lyric.stop && this.lyric.stop();
       }
-      /* 获取歌词 */
-      // MusicId
-      let lyricdata = await Lyric(val.MusicId);
-      /* 歌词处理 */
-      let lyrics = lyricdata.lrc.lyric;
-      this.lyrciManage(lyrics);
     }
   }
 };
@@ -570,7 +612,13 @@ export default {
         }
         .play-lyric-wrapper {
           position: absolute;
-          bottom: -1.3rem;
+          @media only screen and (device-width: 375px) and (min-device-height: 812px) {
+            bottom: -1.2rem;
+          }
+          @media only screen and (device-width: 414px) and (min-device-height: 896px) {
+            bottom: -1.5rem;
+          }
+          bottom: -0.5rem;
           height: 0.6rem;
           width: 4rem;
           left: 50%;
@@ -626,6 +674,13 @@ export default {
       }
     }
     .bottom {
+      position: absolute;
+      @media screen and (min-device-width: 410px) {
+        bottom: 1rem;
+      }
+       bottom: 0.5rem;
+
+      width: 100%;
       .pointer-wrapper {
         display: flex;
         justify-content: center;
@@ -645,9 +700,6 @@ export default {
           }
         }
       }
-      position: absolute;
-      bottom: 1rem;
-      width: 100%;
       .progress-wrapper {
         display: flex;
         align-items: center;

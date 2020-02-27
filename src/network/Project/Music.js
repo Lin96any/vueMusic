@@ -1,5 +1,6 @@
 import createAxios from '../Axios/axios';
 
+
 /* 新歌速递 */
 let newsmusic = (type) => {
     let url = '/top/song ? type =' + type + '';

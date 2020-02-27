@@ -36,6 +36,32 @@ export const GetObject = (singername) => {
     }
 }
 
+export const SetRanComents = (recoments, val) => {
+    SetLocalStorage(`${recoments}-list`, val)
+};
+
+export const GetRanComents = (recoments) => {
+    let recoment = GetLocalstorage(`${recoments}-list`);
+    if (recoments) {
+        return recoment
+    } else {
+        return null
+    }
+};
+
+export const SetSinger = (singer, val) => {
+    SetLocalStorage(`${singer}-list`, val)
+};
+
+export const GetSinger = (singer) => {
+    let singers = GetLocalstorage(`${singer}-list`);
+    if (singers) {
+        return singers
+    } else {
+        return null
+    }
+};
+
 export const SetlikeMusic = (musiclike, val) => {
     let music = GetLocalstorage(`${musiclike}-like`);
     if (!music) {
@@ -49,6 +75,43 @@ export const GetlikeMusic = (musiclike) => {
     let music = GetLocalstorage(`${musiclike}-like`);
     if (music) {
         return music
+    } else {
+        return null
+    }
+}
+
+export const SetToplist = (Toplist, val) => {
+    let top = GetLocalstorage(`${Toplist}-info`);
+    if (!top) {
+        top = {}
+    }
+    top = val;
+    SetLocalStorage(`${Toplist}-info`, top)
+};
+
+export const GeToplist = (Toplist) => {
+    let top = GetLocalstorage(`${Toplist}-info`);
+    if (top) {
+        return top
+    } else {
+        return null
+    }
+}
+
+
+export const SaveHeardMusic = (music, val) => {
+    let heardMusci = GetLocalstorage(`${music}-heard`);
+    if (!heardMusci) {
+        heardMusci = []
+    }
+    heardMusci.push(val);
+    SetLocalStorage(`${music}-heard`, heardMusci)
+};
+
+export const GetHeardMusic = (music) => {
+    let musics = GetLocalstorage(`${music}-heard`);
+    if (musics) {
+        return musics
     } else {
         return null
     }

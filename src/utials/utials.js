@@ -12,7 +12,7 @@ let debounce = function (fn, delay) {
 }
 
 class Singer {
-    constructor({ id, name, avatar, aliaName }) {
+    constructor({ id, name, avatar, aliaName='' }) {
         this.id = id
         this.name = name
         this.avatar = avatar
@@ -31,7 +31,9 @@ let getindex = (el, name, val) => {
 }
 
 class SingerMusic {
-    constructor(MusicId, MusicName, AlbumId, AlbumName, AlbumImage, SingerID, SingerName, singerImg) {
+    constructor(MusicId = '', MusicName = '', AlbumId = '', 
+        AlbumName = '', AlbumImage = '', SingerID = '',
+         SingerName = '', singerImg='') {
         /* 歌曲ID */
         this.MusicId = MusicId;
         /* 歌曲名字 */
@@ -74,11 +76,34 @@ let shuffle = (arr) => {
     return arr
 }
 
+/* 歌单类 */
+class SongList{
+    constructor(id, name, cover, description){
+        this.id = id;
+        this.name = name;
+        this.cover = cover;
+        this.description = description;
+    }
+}
+
+/* 榜单处理 */
+
+class TopSort{
+    constructor(name, id, tracks, coverImgUrl){
+        this.name = name;
+        this.id = id;
+        this.tracks = tracks;
+        this.coverImgUrl = coverImgUrl;
+    }
+}
+
 export {
     debounce,
     Singer,
     getindex,
     SingerMusic,
     playMode,
-    shuffle
+    shuffle,
+    SongList,
+    TopSort
 }

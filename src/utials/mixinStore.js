@@ -1,6 +1,5 @@
 import { mapGetters, mapActions } from 'vuex';
 import { debounce } from "utials/utials";
-import { singerMusic, singerHotMusic, MusicURL } from "network";
 let Mixins = {
     computed: {
         ...mapGetters(['getPlaylist', 'getPlaylastTime',
@@ -12,13 +11,16 @@ let Mixins = {
             'getcurrentIndex',
             'getcurrentSong'
             , 'getmusicUrl'
-            ,'getbs']),
+            , 'getbs', 'getsonglist',
+            'getsongdetials','getheardmusic']),
         boudou() {
             return debounce(this.getbs.refresh, 1000)
         }
     },
-    mouted() {
-        this.handle(this.getplaylists)
+    mounted() {
+        if (this.handle) {
+            this.handle(this.getplaylists);
+        }
     },
     methods: {
         ...mapActions(['setPlaylist',
@@ -31,10 +33,16 @@ let Mixins = {
             'setplaylists',
             'setsequenceList',
             'setcurrentIndex',
-            'setmode', 'selectPlay', 'setMusicUrl','setbsobj']),
+            'setmode', 'selectPlay', 'setMusicUrl', 'setbsobj',
+            'setsonglist', 'randomPlay', 'setsongdetials','setheardmusic']),
     },
 
     watch: {
+        getplaylists(newval) {
+            if (this.handle) {
+                this.handle(newval);
+            }
+        }
     }
 }
 
