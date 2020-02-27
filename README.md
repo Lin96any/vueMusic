@@ -36,9 +36,8 @@
 2.之后会打算重构
 3.欢迎交流学习
 
-#### 感谢
-1.感谢 [ustbhuangyi](https://github.com/ustbhuangyi) 老师的 [Vue 实战教程](http://coding.imooc.com/class/107.html) ，让我学习到很多 vue 的知识。  
-2.感谢 [Binaryify](https://github.com/Binaryify) 对接口文档 [NeteaseCloudMusicApi](https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi) 的不断维护与更新。
+#### 感谢 
++ 感谢 [Binaryify](https://github.com/Binaryify) 对接口文档 [NeteaseCloudMusicApi](https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi) 的不断维护与更新。
 
 #### 项目预览
 1.推荐使用手机预览，PC端请在 Chrome 调试模式下体验，如果不能滚动，刷新一下页面即可
